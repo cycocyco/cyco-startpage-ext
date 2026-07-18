@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https:; img-src 'self' https: data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self';" />
+  <title>起始页</title>
+  <link rel="stylesheet" href="newtab.css" />
+</head>
+<body>
+  <div id="debug-overlay" style="position:fixed;bottom:0;left:0;right:0;max-height:120px;overflow:auto;background:rgba(0,0,0,0.8);color:#ff6b6b;font-size:11px;padding:8px;z-index:9999;font-family:monospace;white-space:pre-wrap;pointer-events:none;"></div>
+  <!-- Settings gear -->
+  <button class="gear-btn" id="gear-btn" title="设置"><svg class="gear-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M21.5 12h-2.2M4.7 12H2.5M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9 5.3 5.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <div class="loc" id="loc-info">定位中…</div>
+  <div class="toast" id="toast" hidden></div>
+  <div class="settings" id="settings">
+    <h3>背景与设置</h3>
+    <div class="swatches" id="swatches">
+      <div class="swatch active" style="background:#1A1813" data-bg="#1A1813"></div>
+      <div class="swatch" style="background:#221C16" data-bg="#221C16"></div>
+      <div class="swatch" style="background:#2A211B" data-bg="#2A211B"></div>
+      <div class="swatch gradient" data-bg="linear-gradient(135deg,#2D2A24,#4A453C)"></div>
+      <input type="color" value="#1A1813" id="color-picker" />
+    </div>
+      <div class="toggle-row">
+        <span>显示热点新闻</span>
+        <div class="switch on" id="hot-toggle"></div>
+      </div>
+    <div class="toggle-row">
+      <span>定位天气</span>
+      <div class="switch on" id="geo-toggle"></div>
+    </div>
+    <div class="toggle-row">
+      <span>亮色模式</span>
+      <div class="switch" id="theme-toggle"></div>
+    </div>
+    <button class="refresh-favicons" id="refresh-favicons">刷新书签图标</button>
+  </div>
+
+  <div class="wrap">
+    <!-- Top bar: clock + weather -->
+    <div class="topbar">
+      <div class="clock">
+        <div class="time" id="clock-time">--:--:--</div>
+        <div class="date" id="clock-date">----</div>
+      </div>
+      <div class="weather" id="weather">
+        <div class="icon" id="weather-icon">⛅</div>
+        <div class="wtext">
+          <div class="trow">
+            <span class="temp" id="weather-temp">--°</span>
+            <span class="desc" id="weather-desc">加载中…</span>
+          </div>
+          <div class="meta" id="weather-meta">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-card">
+      <div class="search-inner">
+        <div class="engine-switch" id="engine-switch">
+          <button class="active" data-engine="bing">
+            <svg class="eng-logo" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 4v16M6 5h11l-3 3 3 3H6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+            </svg>Bing</button>
+          <button data-engine="google">
+            <svg class="eng-logo" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5a7 7 0 1 0 6.3 3.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M12 5V12l4.2-1.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>Google</button>
+          <button data-engine="baidu">
+            <svg class="eng-logo" viewBox="0 0 24 24" aria-hidden="true">
+              <ellipse cx="12" cy="15" rx="4.2" ry="3.4" fill="none" stroke="currentColor" stroke-width="2"/>
+              <circle cx="7" cy="8.5" r="1.7" fill="none" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="6.4" r="1.7" fill="none" stroke="currentColor" stroke-width="2"/>
+              <circle cx="17" cy="8.5" r="1.7" fill="none" stroke="currentColor" stroke-width="2"/>
+            </svg>Baidu</button>
+          <button data-engine="yandex">
+            <svg class="eng-logo" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 6h10M12 6v12M12 18c-4 0-6-2.4-6-5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>Yandex</button>
+          <button data-engine="duckduckgo">
+            <svg class="eng-logo" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 14c0-4 3.6-6.5 7.5-6.5 2 0 3.5.7 4.5 1.8 1.2-1 2.8-1.3 4-1 .8.2 1 .9.5 1.5-.6.7-1.4 1.2-2.3 1.4 1 .8 1.6 2 1.6 3.3 0 2.6-2.4 4-6 4H9c-3 0-5-1.8-5-4.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              <circle cx="9" cy="12.5" r="1.1" fill="currentColor"/>
+            </svg>DuckDuckGo</button>
+        </div>
+        <div class="search-box">
+          <input type="text" id="search-input" autocomplete="off" placeholder="搜索，或直接输入网址回车访问…" />
+          <button id="search-btn">搜索</button>
+        </div>
+        <div class="suggest" id="suggest"><div class="suggest-list" id="suggest-list"><div class="suggest-inner" id="suggest-inner"></div></div></div>
+      </div>
+    </div>
+
+    <!-- Bookmarks -->
+    <div class="bookmarks-wrap">
+      <div class="section-title">
+        <h2>书签</h2>
+        <div class="bm-actions">
+          <button class="bm-toggle" id="bm-toggle" hidden>展开全部 ▾</button>
+          <button class="add-btn" id="bm-add-btn">+ 添加</button>
+        </div>
+      </div>
+      <div class="bookmarks collapsed" id="bookmarks"></div>
+    </div>
+
+    <!-- Hot search -->
+    <div class="hot-wrap" id="hot-wrap">
+      <div class="hot-grid" id="hot-grid"></div>
+      <div class="hot-off" id="hot-off" hidden>热搜暂时不可用</div>
+    </div>
+  </div>
+
+  <!-- Bookmark add modal -->
+  <div class="modal" id="bm-modal" hidden>
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>添加书签</h3>
+        <button class="modal-close" id="bm-modal-close">×</button>
+      </div>
+      <div class="modal-tabs">
+        <button class="tab active" data-tab="tree">从收藏夹选择</button>
+        <button class="tab" data-tab="manual">手动添加</button>
+      </div>
+      <div class="tab-panel" id="tab-tree">
+        <input type="text" id="bm-filter" placeholder="搜索收藏夹…" />
+        <div class="tree" id="bm-tree"></div>
+        <div class="modal-actions">
+          <button class="btn-primary" id="bm-tree-save">添加选中</button>
+        </div>
+      </div>
+      <div class="tab-panel" id="tab-manual" hidden>
+        <label>标题</label>
+        <input type="text" id="manual-title" placeholder="例如：我的站点" />
+        <label>网址</label>
+        <input type="text" id="manual-url" placeholder="https://example.com" />
+        <div class="modal-actions">
+          <button class="btn-primary" id="bm-manual-save">添加</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/clock.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/bookmarks.js"></script>
+  <script src="js/weather.js"></script>
+  <script src="js/weather-weekly.js"></script>
+  <script src="js/hot.js"></script>
+  <script src="js/settings.js"></script>
+</body>
+</html>
