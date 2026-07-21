@@ -1147,19 +1147,17 @@ body {
   margin-left: 16px;
   border-left: 1px solid var(--border);
   padding-left: 6px;
-}
-
-.tree-children {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.4s var(--ease);
-}
-
-.tree-children.open { grid-template-rows: 1fr; }
-
-.tree-children > :first-child {
-  min-height: 0;
   overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.35s var(--ease), opacity 0.25s var(--ease);
+}
+.tree-children.open {
+  max-height: 2000px;
+  opacity: 1;
+}
+.tree-children.open > :first-child {
+  margin-top: 0;
 }
 
 .tree-row .twist {
