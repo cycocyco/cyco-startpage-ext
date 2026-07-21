@@ -261,6 +261,7 @@ body {
 .search-inner { position: relative; }
 
 .engine-switch {
+  position: relative;
   display: inline-flex;
   gap: 3px;
   margin-bottom: 16px;
@@ -305,7 +306,7 @@ body {
 .engine-switch button.active .eng-logo { opacity: 1; }
 .engine-switch .indicator {
   position: absolute;
-  z-index: 0;
+  z-index: -1;
   top: 4px; bottom: 4px;
   left: 4px;
   background: var(--card-bg-solid);
@@ -1147,8 +1148,6 @@ body {
   border-left: 1px solid var(--border);
   padding-left: 6px;
 }
-
-.tree-children[hidden] { display: none; }
 
 .tree-children {
   display: grid;

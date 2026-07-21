@@ -267,21 +267,31 @@
         const tree = document.getElementById("bm-tree");
         tree.innerHTML = "加载中…";
         try {
+          if (!chrome.bookmarks) { tree.textContent = "缺少 bookmarks 权限"; return; }
           const treeData = await new Promise((resolve) =>
             chrome.bookmarks.getTree(resolve)
           );
+          if (!Array.isArray(treeData) || !treeData.length) { tree.textContent = "收藏夹为空"; return; }
           const existing = (await App.load(App.STORAGE_KEYS.bookmarks, [])).map((x) => x.url);
           const existingSet = new Set(existing);
           tree.innerHTML = "";
           function build(nodes, parent) {
-            nodes.forEach((node) => {
-              if (!node.children) {
+            (nodes || []).forEach((node) => {
+              if (!node || !node.id) return;
+              const isFolder = Array.isArray(node.children);
+              if (!isFolder) {
                 const row = document.createElement("div");
                 row.className = "tree-row leaf";
                 if (existingSet.has(node.url)) row.classList.add("added-locked");
-                row.dataset.url = node.url;
-                row.innerHTML = `<span class="label">${node.title}</span><div class="leaf-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>`;
-                row.addEventListener("click", () => {
+                row.dataset.url = node.url || "";
+                const label = document.createElement("span");
+                label.className = "label";
+                label.textContent = node.title || "";
+                const check = document.createElement("div");
+                check.className = "leaf-check";
+                check.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+                row.append(label, check);
+                row.addEventListener("click", (e) => {
                   if (row.classList.contains("added-locked")) return;
                   row.classList.toggle("selected");
                 });
@@ -295,13 +305,19 @@
               nodeEl.className = "tree-node";
               const row = document.createElement("div");
               row.className = "tree-row";
-              row.innerHTML = `<span class="twist">▸</span><span class="label">${node.title}</span>`;
+              const twist = document.createElement("span");
+              twist.className = "twist";
+              twist.textContent = "▸";
+              const label = document.createElement("span");
+              label.className = "label";
+              label.textContent = node.title || "";
+              row.append(twist, label);
               const children = document.createElement("div");
               children.className = "tree-children";
-              children.hidden = true;
-              row.addEventListener("click", () => {
+              row.addEventListener("click", (e) => {
+                if (e.target.closest(".leaf-check")) return;
                 children.classList.toggle("open");
-                row.querySelector(".twist").classList.toggle("rot", children.classList.contains("open"));
+                twist.classList.toggle("rot", children.classList.contains("open"));
               });
               nodeEl.append(row, children);
               parent.appendChild(nodeEl);
@@ -309,8 +325,8 @@
             });
           }
           build(treeData, tree);
-        } catch {
-          tree.textContent = "无法读取收藏夹";
+        } catch (e) {
+          tree.textContent = "无法读取收藏夹: " + (e?.message || e);
         }
       }
     },
