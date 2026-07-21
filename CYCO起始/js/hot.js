@@ -91,7 +91,6 @@
 
       function render(groups) {
         grid.innerHTML = "";
-        let globalIndex = 0;
         groups.forEach((g) => {
           const source = document.createElement("div");
           source.className = "hot-source";
@@ -113,7 +112,7 @@
             const a = document.createElement("a");
             a.className = "hot-card";
             a.href = item.url || "#";
-            a.style.animationDelay = (globalIndex * 0.025) + "s";
+            a.style.animationDelay = (i * 0.03) + "s";
             a.addEventListener("click", (e) => {
               if (item.url && item.url !== "#") {
                 e.preventDefault();
@@ -160,7 +159,6 @@
             }
 
             grid.appendChild(a);
-            globalIndex++;
           });
         });
       }

@@ -2,20 +2,6 @@
 // pure utilities reused by several feature modules. Loaded first.
 window.App = window.App || {};
 
-(function(){
-  const overlay = document.getElementById('debug-overlay');
-  function logErr(msg) {
-    if (!overlay) return;
-    overlay.textContent += msg + '\n';
-  }
-  window.addEventListener('error', (e) => {
-    logErr('JS ERROR: ' + e.message + ' @ ' + (e.filename || '') + ':' + (e.lineno || ''));
-  });
-  window.addEventListener('unhandledrejection', (e) => {
-    logErr('PROMISE REJECTION: ' + (e.reason && e.reason.message ? e.reason.message : String(e.reason)));
-  });
-})();
-
 App.STORAGE_KEYS = {
   bg: "bg",
   engine: "engine",
@@ -57,7 +43,7 @@ App.toast = function (msg) {
   clearTimeout(_toastTimer);
   _toastTimer = setTimeout(() => {
     el.classList.add("closing");
-    setTimeout(() => { el.hidden = true; }, 300);
+    setTimeout(() => { el.hidden = true; }, 350);
   }, 2600);
 };
 

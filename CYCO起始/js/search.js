@@ -36,8 +36,12 @@
         indicator.style.width = active.offsetWidth + "px";
         indicator.style.transform = `translateX(${active.offsetLeft - 4}px)`;
       }
-      requestAnimationFrame(moveIndicator);
-      window.addEventListener("resize", moveIndicator);
+      requestAnimationFrame(() => { moveIndicator(); indicator.classList.add("ready"); });
+      let resizeTimer;
+      window.addEventListener("resize", () => {
+        cancelAnimationFrame(resizeTimer);
+        resizeTimer = requestAnimationFrame(moveIndicator);
+      });
 
       App.load(App.STORAGE_KEYS.engine, "bing").then((e) => {
         engine = e;

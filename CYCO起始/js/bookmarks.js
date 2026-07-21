@@ -206,7 +206,7 @@
       }
       function close() {
         modal.classList.add("closing");
-        setTimeout(() => { modal.hidden = true; }, 280);
+        setTimeout(() => { modal.hidden = true; }, 350);
       }
       addBtn.addEventListener("click", open);
       closeBtn.addEventListener("click", close);
@@ -300,9 +300,8 @@
               children.className = "tree-children";
               children.hidden = true;
               row.addEventListener("click", () => {
-                children.hidden = !children.hidden;
-                children.classList.toggle("open", !children.hidden);
-                row.querySelector(".twist").classList.toggle("rot", !children.hidden);
+                children.classList.toggle("open");
+                row.querySelector(".twist").classList.toggle("rot", children.classList.contains("open"));
               });
               nodeEl.append(row, children);
               parent.appendChild(nodeEl);
